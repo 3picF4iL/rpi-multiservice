@@ -1,0 +1,15 @@
+---
+- name: Create raspberry-pi 4 multiservices server
+  hosts: localhost
+  roles:
+    - role: jellyfin
+      tags: jellyfin
+    
+    - role: qbittorrent
+      tags: qbittorrent
+    
+    - role: pihole
+      tags: pihole
+    
+    - role: nginx
+      tags: nginx

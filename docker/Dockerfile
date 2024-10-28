@@ -10,3 +10,5 @@ RUN apt-get update && \
 
 WORKDIR /ansible
 COPY ../ansible /ansible/
+
+CMD ["ansible-playbook", "/ansible/rpi_multi_services.yaml", "-i", "localhost"]
