@@ -1,0 +1,14 @@
+---
+# If you have an existing jellyfin configuration like backup or something
+# prepare two .tar.gz one with configuration from /etc/ and one from /var/lib
+use_existing_configuration: false
+existing_configuration_etc: ""
+path_conf_etc: "/etc"
+existing_configuration_varlib: ""
+path_conf_varlib: "/var/lib"
+jellyfin_packages:
+  - ffmpeg
+  - jellyfin-web
+  - libx265-192
+  - libx264-160
+  - jellyfin

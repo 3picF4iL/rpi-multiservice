@@ -1,0 +1,46 @@
+---
+- name: Jellyfin installation
+  block:
+    - name: Add Jellyfin GPG key and repository
+      block:
+        - name: Add Jellyfin GPG key
+          ansible.builtin.apt_key:
+            url: https://repo.jellyfin.org/debian/jellyfin_team.gpg.key
+            state: present
+
+        - name: Add Jellyfin repository
+          block:
+            - name: Define architecture
+              # As RPi OS system is aarch64 and jellyfin repo does not support it
+              # use arm64 as its closest representation
+              set_fact:
+                arch: "{{'arm64' if ansible_distribution == 'Debian' else ansible_architecture }}"
+            - name: Set repository
+              ansible.builtin.apt_repository:
+                filename: jellyfin-repo
+                repo: "deb [arch={{ arch }}] https://repo.jellyfin.org/{{ ansible_distribution | lower }} {{ ansible_lsb['codename'] | lower }} main"
+                state: present
+
+        - name: Update apt cache
+          ansible.builtin.apt:
+            update_cache: yes
+          changed_when: false
+
+    - name: Jellyfin installation
+      ansible.builtin.apt:
+        package: "{{ item }}"
+        state: present
+      with_items: "{{ jellyfin_packages }}"
+
+- name: Jellyfin configuration
+  when: use_existing_configuration == true
+  block:
+    - name: Extract existing jellyfin configuration at /etc
+      ansible.builtin.unarchive:
+        src: "{{ existing_configuration_etc }}"
+        dst: "{{ path_conf_etc }}"
+
+    - name: Extract existing jellyfin confiuguration at /var/lib
+      ansible.builtin.unarchive:
+        src: "{{ existing_configuration_varlib }}"
+        dst: "{{ path_conf_varlib }}"
