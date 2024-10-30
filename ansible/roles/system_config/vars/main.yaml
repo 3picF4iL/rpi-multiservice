@@ -1,0 +1,18 @@
+---
+prod_disks:
+  - name: disk1
+    path: /dev/sda2
+  - name: disk2
+    path: /dev/sdb2
+
+test_disks:
+  - name: disk1
+    source: /dev/loop6
+    path: /ansible/disks/disk1.img
+  - name: disk2
+    source: /dev/loop7
+    path: /ansible/disks/disk2.img
+
+mountpoints:
+  disk1: /opt/jellyfin-storage
+  disk2: /opt/jellyfin-private

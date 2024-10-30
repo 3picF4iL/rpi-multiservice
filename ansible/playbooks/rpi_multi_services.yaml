@@ -1,7 +1,11 @@
 ---
 - name: Create raspberry-pi 4 multiservices server
   hosts: localhost
+
   roles:
+    - role: system_config
+      tags: system_config
+
     - role: jellyfin
       tags: jellyfin
     
@@ -13,3 +17,6 @@
     
     - role: nginx
       tags: nginx
+
+  environment:
+    mode: "test"

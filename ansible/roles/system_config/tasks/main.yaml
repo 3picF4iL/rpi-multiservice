@@ -1,0 +1,34 @@
+---
+- name: Disk mounting
+  vars:
+    mode: "{{ ansible_env.mode }}"
+  block:
+    - name: Set disks variable based on environment
+      set_fact:
+        disks: "{{ prod_disks if mode == 'production' else test_disks }}"
+
+    - name: Use losetup to disk mounting in test mode
+      when: mode == "test"
+      command: losetup {{ item.source }} {{ item.path }}
+      loop: "{{ disks }}"
+      ignore_errors: true
+
+    - name: Create directories for mounting
+      ansible.builtin.file:
+        path: "{{ item.value }}"
+        state: directory
+        mode: "0755"
+      loop: "{{ mountpoints | dict2items }}"
+
+    - name: Get UUID of disk images
+      command: blkid -s UUID -o value {{ item.path }}
+      register: disk_uuids
+      loop: "{{ disks }}"
+      changed_when: false
+
+    - name: Add disks to /etc/fstab
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        line: 'UUID={{ item.stdout }} {{ mountpoints[item.item.name] }} ntfs defaults,permissions,uid=110,gid=114,umask=000 0 0'
+      loop: "{{ disk_uuids.results }}"
+      changed_when: false
