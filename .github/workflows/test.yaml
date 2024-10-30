@@ -1,14 +1,11 @@
-name: Test ansible playbook
+name: Test Docker Image
 
 on:
   push:
     branches: ["master"]
     paths:
       - "ansible/**"
-  pull_request:
-    branches: ["master"]
-    paths:
-      - "ansible/**"
+  workflow_dispatch:
 
 jobs:
   test:
@@ -16,14 +13,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
+      
       - name: Set repository owner to lowercase
         id: set_lowercase
         run: |
@@ -33,20 +23,22 @@ jobs:
         id: check_image
         run: |
           if docker pull ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest; then
-            echo "Image exists."
             echo "::set-output name=image_exists::true"
           else
-            echo "Image does not exist."
             echo "::set-output name=image_exists::false"
           fi
 
-      - name: Build and push Docker image
-        if: steps.check_image.outputs.image_exists == 'false'
-        run: |
-          docker build --platform linux/arm64 -t ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest .
-          docker push ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest
+  build_image:
+    if: steps.check_image.outputs.image_exists == 'false'
+    uses: ./.github/workflows/build.yaml
+    with:
+      ref: master
 
+  run_tests:
+    needs: build_image
+    if: steps.check_image.outputs.image_exists == 'true' || needs.build_image.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
       - name: Run Ansible tests
-        if: steps.check_image.outputs.image_exists == 'true'
         run: |
-          docker run --rm ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest ansible-playbook /ansible/your_playbook.yml -i localhost
+          docker run --rm ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest ansible-playbook /ansible/playbooks/rpi_multi_services.yaml -i localhost
