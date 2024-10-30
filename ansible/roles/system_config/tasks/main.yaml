@@ -26,9 +26,11 @@
       loop: "{{ disks }}"
       changed_when: false
 
-    - name: Add disks to /etc/fstab
-      ansible.builtin.lineinfile:
-        path: /etc/fstab
-        line: 'UUID={{ item.stdout }} {{ mountpoints[item.item.name] }} ntfs defaults,permissions,uid=110,gid=114,umask=000 0 0'
+    - name: Mount devices by UUID
+      ansible.posix.mount:
+        path: "{{ mountpoints[item.item.name] }}"
+        src: "UUID={{ item.stdout }}"
+        fstype: ntfs
+        opts: defaults,permissions,uid=110,gid=114,umask=000
+        state: present
       loop: "{{ disk_uuids.results }}"
-      changed_when: false
