@@ -8,15 +8,16 @@
 
     - role: jellyfin
       tags: jellyfin
-    
+
     - role: qbittorrent
       tags: qbittorrent
-    
+
     - role: pihole
       tags: pihole
-    
+
     - role: nginx
       tags: nginx
 
   environment:
     mode: "test"
+
