@@ -33,7 +33,7 @@ jobs:
   build_image:
     needs: check_image
     if: needs.check_image.outputs.image_exists == 'false'
-    uses: ./.github/workflows/build.yaml
+    uses: ./.github/workflows/build-image.yaml
 
   run_tests:
     needs: [check_image, build_image]
