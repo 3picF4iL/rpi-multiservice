@@ -1,4 +1,15 @@
 ---
+- name: System update
+  block:
+    - name: Update list of the packages
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Upgrade packages
+      ansible.builtin.apt:
+        upgrade: true
+        state: latest
+
 - name: Disk mounting
   vars:
     mode: "{{ ansible_env.mode }}"
