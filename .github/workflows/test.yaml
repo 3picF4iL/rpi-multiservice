@@ -24,10 +24,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set repository owner to lowercase
+        id: set_lowercase
+        run: |
+          echo "repository_owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Check if Docker image exists
         id: check_image
         run: |
-          if docker pull ghcr.io/${{ github.repository_owner | lower }}/mockrpi-os:latest; then
+          if docker pull ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest; then
             echo "Image exists."
             echo "::set-output name=image_exists::true"
           else
@@ -38,10 +43,10 @@ jobs:
       - name: Build and push Docker image
         if: steps.check_image.outputs.image_exists == 'false'
         run: |
-          docker build --platform linux/arm64 -t ghcr.io/${{ github.repository_owner | lower }}/mockrpi-os:latest .
-          docker push ghcr.io/${{ github.repository_owner | lower }}/mockrpi-os:latest
+          docker build --platform linux/arm64 -t ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest .
+          docker push ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest
 
       - name: Run Ansible tests
         if: steps.check_image.outputs.image_exists == 'true'
         run: |
-          docker run --rm ghcr.io/${{ github.repository_owner | lower }}/mockrpi-os:latest ansible-playbook /ansible/your_playbook.yml -i localhost
+          docker run --rm ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest ansible-playbook /ansible/your_playbook.yml -i localhost
