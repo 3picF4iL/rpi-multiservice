@@ -30,10 +30,11 @@ jobs:
             echo "image_exists=false" >> $GITHUB_ENV
           fi
 
-  #build_image:
-    #needs: check_image
-    #if: needs.check_image.outputs.image_exists == 'false'
-    #uses: actions/build-image@v4
+  build_image:
+    needs: check_image
+    if: needs.check_image.outputs.image_exists == 'false'
+    runs-on: ubuntu-latest
+    uses: actions/build-image@v4
 
   run_tests:
     needs: [check_image, build_image]
