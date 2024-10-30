@@ -8,6 +8,7 @@ RUN apt-get update && \
         ansible \
         watch \
         ntfs-3g \
+        python3-apt \
         zsh \
     && rm -rf /var/lib/apt/lists/*
 
@@ -19,8 +20,8 @@ RUN mkdir -p /ansible/disks
 RUN dd if=/dev/zero of=/ansible/disks/disk1.img bs=1M count=1024 && \
     dd if=/dev/zero of=/ansible/disks/disk2.img bs=1M count=1024
 
-RUN mkntfs -F /dev/loop6 && \
-    mkntfs -F /dev/loop7
+RUN mkntfs -F /ansible/disks/disk1.img && \
+    mkntfs -F /ansible/disks/disk2.img
 
 #CMD ["ansible-playbook", "/ansible/rpi_multi_services.yaml", "-i", "localhost"]
 COPY docker/entrypoint.sh /entrypoint.sh
