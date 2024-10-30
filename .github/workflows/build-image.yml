@@ -11,6 +11,12 @@ on:
     paths:
       - "Dockerfile"
       - "docker/**"
+  workflow_call:
+    inputs:
+      ref:
+        required: false
+        type: string
+        default: "master"
 
 jobs:
   build:
