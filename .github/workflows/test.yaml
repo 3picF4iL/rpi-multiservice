@@ -36,12 +36,7 @@ jobs:
           else
             echo "image_exists=false" >> $GITHUB_ENV
           fi
-        continue-on-error: true
-
-      - name: Check status
-        if: ! steps.check_image
-        run: exit 1
-        
+        continue-on-error: false
 
   build_image:
     runs-on: ubuntu-latest
