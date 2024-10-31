@@ -29,15 +29,15 @@ jobs:
         id: check_image
         run: |
           if docker pull ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest; then
-            echo "image_exists=true" >> $GITHUB_ENV
+            echo "image_exists=true" >> $GITHUB_OUTPUT
           else
-            echo "image_exists=false" >> $GITHUB_ENV
+            echo "image_exists=false" >> $GITHUB_OUTPUT
           fi
         continue-on-error: true
 
       - name: Inform about check_image status
         run: |
-          if [ "${{ env.image_exists }}" == 'false' ]; then
+          if [ "${{ steps.check_image.outputs.image_exists }}" == 'false' ]; then
             echo "Image does not exist. Building a new one."
           else
             echo "Image exists, going to use it."
@@ -45,12 +45,12 @@ jobs:
 
   build_image:
     needs: check_image
-    if: env.image_exists == 'false'
+    if: needs.check_image.outputs.image_exists == 'false'
     uses: ./.github/workflows/build-image.yaml
 
   run_tests:
     needs: [check_image, build_image]
-    if: env.image_exists == 'true' || needs.build_image.result == 'success'
+    if: needs.check_image.outputs.image_exists == 'true' || needs.build_image.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Use repository owner
