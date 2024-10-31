@@ -15,7 +15,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set repository owner to lowercase
-        id: set_lowercase
         run: |
           echo "repository_owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
@@ -30,9 +29,9 @@ jobs:
         id: check_image
         run: |
           if docker pull ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest; then
-            echo "::set-output name=image_exists::true"
+            echo "image_exists=true" >> $GITHUB_ENV
           else
-            echo "::set-output name=image_exists::false"
+            echo "image_exists=false" >> $GITHUB_ENV
           fi
         continue-on-error: true
 
@@ -44,19 +43,20 @@ jobs:
             echo "Image exists, going to use it."
           fi
 
-    outputs:
-      image_exists: ${{ steps.check_image.outputs.image_exists }}
-
   build_image:
     needs: check_image
-    if: needs.check_image.outputs.image_exists == 'false'
+    if: env.image_exists == 'false'
     uses: ./.github/workflows/build-image.yaml
 
   run_tests:
     needs: [check_image, build_image]
-    if: needs.check_image.outputs.image_exists == 'true' || needs.build_image.result == 'success'
+    if: env.image_exists == 'true' || needs.build_image.result == 'success'
     runs-on: ubuntu-latest
     steps:
+      - name: Use repository owner
+        run: |
+          echo "Repository Owner: ${{ env.repository_owner }}"
+
       - name: Run Ansible tests
         run: |
           docker run --rm ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest ansible-playbook /ansible/playbooks/rpi_multi_services.yaml -i localhost
