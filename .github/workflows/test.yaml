@@ -44,6 +44,8 @@ jobs:
     if: ${{ failure() }} and check_image.outputs.image_exists == 'false'
     steps:
       - uses: actions/checkout@v4
+        with:
+          Default: ${{ github.repository }}
       - uses: ./.github/workflows/build-image.yaml
 
   run_tests:
