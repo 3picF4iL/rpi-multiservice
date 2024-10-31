@@ -39,6 +39,10 @@ jobs:
           fi
         continue-on-error: true
 
+      - name: Debug
+        run: |
+          echo "$GITHUB_ENV"
+
   build_image:
     needs: check_image
     if: needs.check_image.outputs.image_exists == 'false'
