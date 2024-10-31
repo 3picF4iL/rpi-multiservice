@@ -30,9 +30,9 @@ jobs:
         id: check_image
         run: |
           if docker pull ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest; then
-            echo "image_exists=true" >> $GITHUB_ENV
+            echo "::set-output name=image_exists::true"
           else
-            echo "image_exists=false" >> $GITHUB_ENV
+            echo "::set-output name=image_exists::false"
           fi
         continue-on-error: true
 
