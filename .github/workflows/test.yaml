@@ -11,8 +11,6 @@ on:
 jobs:
   check_image:
     runs-on: ubuntu-latest
-    outputs:
-      image_exists: ${{ steps.check_image.outputs.image_exists }}
     steps:
       - uses: actions/checkout@v4
 
@@ -39,9 +37,8 @@ jobs:
           fi
         continue-on-error: true
 
-      - name: Debug
-        run: |
-          echo "$GITHUB_ENV"
+    outputs:
+      image_exists: ${{ steps.check_image.outputs.image_exists }}
 
   build_image:
     needs: check_image
