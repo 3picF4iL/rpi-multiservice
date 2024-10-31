@@ -28,7 +28,7 @@ jobs:
       - name: Check if Docker image exists
         id: check_image
         run: |
-          if docker pull ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest; then
+          if docker inspect ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest; then
             echo "image_exists=true" >> $GITHUB_OUTPUT
           else
             echo "image_exists=false" >> $GITHUB_OUTPUT
@@ -45,7 +45,7 @@ jobs:
 
   build_image:
     needs: check_image
-    if: needs.check_image.outputs.image_exists == 'false'
+    if: needs.check_image.outputs.image_exists == 'true'
     uses: ./.github/workflows/build-image.yaml
 
   run_tests:
