@@ -33,8 +33,7 @@ jobs:
   build_image:
     needs: check_image
     if: needs.check_image.outputs.image_exists == 'false'
-    runs-on: ubuntu-latest
-    uses: actions/build-image@v4
+    uses: "{{ env.GITHUB_REPOSITORY }}/.github/workflows/build-image.yaml@master"
 
   run_tests:
     needs: [check_image, build_image]
