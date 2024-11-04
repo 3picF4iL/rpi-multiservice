@@ -35,9 +35,11 @@ jobs:
         run: |
           ENCODED_TOKEN=$(echo -n "${{ secrets.GITHUB_TOKEN }}" | base64)
           TAG_EXISTS=$(curl -s -H "Authorization: Bearer ${ENCODED_TOKEN}" \
-              https://ghcr.io/v2/${{ env.repository_owner }}/${{ env.IMAGE_NAME }}/tags/list \
-              | jq -r --arg TAG "latest" '.tags[] \
-              || select(. == $TAG)')
+              https://ghcr.io/v2/${{ env.repository_owner }}/${{ env.IMAGE_NAME }}/tags/list #\
+              #| jq -r --arg TAG "latest" '.tags[] \
+              #| select(. == $TAG)')
+          echo "$TAG_EXISTS"
+          exit 1
           if [[ -n "$TAG_EXISTS" ]]; then
             echo "image_exists=true" >> $GITHUB_OUTPUT
           else
