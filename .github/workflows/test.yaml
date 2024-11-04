@@ -64,4 +64,4 @@ jobs:
 
       - name: Run Ansible tests
         run: |
-          docker run --rm ghcr.io/${{ needs.setup.outputs.repository_owner }}/mockrpi-os:latest ansible-playbook /ansible/playbooks/rpi_multi_services.yaml -i localhost
+          docker run --rm --platform linux/arm64 ghcr.io/${{ needs.setup.outputs.repository_owner }}/${{ env.IMAGE_NAME }}:latest ansible-playbook /ansible/playbooks/rpi_multi_services.yaml -i localhost
