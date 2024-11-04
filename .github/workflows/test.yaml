@@ -10,6 +10,7 @@ on:
 
 env:
   IMAGE_NAME: mockrpi-os
+  IMAGE_TAG: latest
 
 jobs:
   setup:
@@ -63,4 +64,14 @@ jobs:
 
       - name: Run Ansible tests
         run: |
-          docker run --rm --platform linux/arm64 ghcr.io/${{ needs.setup.outputs.repository_owner }}/${{ env.IMAGE_NAME }}:latest ansible-playbook /ansible/playbooks/rpi_multi_services.yaml -i localhost
+          PLATFORM_ARCH="linux/arm64"
+          IMAGE="${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
+          IMAGE_LINK="ghcr.io/${{ needs.setup.outputs.repository_owner }}/$IMAGE"
+          PLAYBOOK_PATH="/ansible/playbooks/rpi_multi_services.yaml"
+
+          export ANSIBLE_ROLES_PATH=$ANSIBLE_ROLES_PATH:/ansible/roles
+
+          docker run --rm --platform \
+            $PLATFORM_ARCH \
+            $IMAGE_LINK \
+            ansible-playbook $PLAYBOOK_PATH
