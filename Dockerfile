@@ -23,6 +23,4 @@ RUN dd if=/dev/zero of=/ansible/disks/disk1.img bs=1M count=1024 && \
 RUN mkntfs -F /ansible/disks/disk1.img && \
     mkntfs -F /ansible/disks/disk2.img
 
-#CMD ["ansible-playbook", "/ansible/rpi_multi_services.yaml", "-i", "localhost"]
-COPY docker/entrypoint.sh /entrypoint.sh
-ENTRYPOINT [ "/entrypoint.sh" ]
+CMD [ "/bin/bash" ]
