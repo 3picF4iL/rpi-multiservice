@@ -12,18 +12,29 @@ env:
   IMAGE_NAME: mockrpi-os
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+        repository_owner: ${{ steps.set_owner.outputs.owner }}
+    steps:
+      - name: Set repository owner to lowercase
+        id: set_owner
+        run: |
+          owner="$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')"
+          variable="owner=$repository_owner"
+          echo "$variable" >> $GITHUB_ENV
+          echo "$variable" >> $GITHUB_OUTPUT
+
   check:
+    needs: setup
     runs-on: ubuntu-latest
     outputs:
       image_exists: ${{ steps.image_check.outputs.image_exists }}
     steps:
-      - name: Set repository owner to lowercase
-        run: |
-          echo "repository_owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-  
       - name: Check if Docker image exists
         id: image_check
         run: |
+          repo_owner=${{ needs.setup.outputs.repository_owner }}
           ENCODED_TOKEN=$(echo -n "${{ secrets.GITHUB_TOKEN }}" | base64)
           TAG_EXISTS=$(curl -s -H "Authorization: Bearer ${ENCODED_TOKEN}" \
               "https://ghcr.io/v2/${{ env.repository_owner }}/${{ env.IMAGE_NAME }}/tags/list" | \
@@ -43,14 +54,14 @@ jobs:
     uses: ./.github/workflows/build-image.yaml
 
   run_tests:
-    needs: check
+    needs: [setup, check]
     if: ${{ needs.check.outputs.image_exists == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Use repository owner
         run: |
-          echo "Repository Owner: ${{ env.repository_owner }}"
+          echo "Repository Owner: ${{ needs.setup.outputs.repository_owner }}"
 
       - name: Run Ansible tests
         run: |
-          docker run --rm ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest ansible-playbook /ansible/playbooks/rpi_multi_services.yaml -i localhost
+          docker run --rm ghcr.io/${{ needs.setup.outputs.repository_owner }}/mockrpi-os:latest ansible-playbook /ansible/playbooks/rpi_multi_services.yaml -i localhost
