@@ -1,3 +1,3 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 watch -n 100 "ps"
