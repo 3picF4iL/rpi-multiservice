@@ -1,7 +1,6 @@
 ---
 - name: Create raspberry-pi 4 multiservices server
   hosts: localhost
-
   roles:
     - role: system_config
       tags: system_config
@@ -20,4 +19,3 @@
 
   environment:
     mode: "test"
-

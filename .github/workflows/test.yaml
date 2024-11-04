@@ -67,9 +67,10 @@ jobs:
           PLATFORM_ARCH="linux/arm64"
           IMAGE="${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
           IMAGE_LINK="ghcr.io/${{ needs.setup.outputs.repository_owner }}/$IMAGE"
-          PLAYBOOK_PATH="/ansible/playbooks/rpi_multi_services.yaml"
+          PLAYBOOK_PATH="playbooks/rpi_multi_services.yaml"
 
           docker run --rm --platform \
             $PLATFORM_ARCH \
+            -e ANSIBLE_ROLES_PATH="/ansible/roles" \
             $IMAGE_LINK \
             ansible-playbook $PLAYBOOK_PATH
