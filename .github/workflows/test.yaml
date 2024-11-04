@@ -6,36 +6,20 @@ on:
     paths:
       - "ansible/**"
       - ".github/**"
-  workflow_dispatch:
 
 env:
   IMAGE_NAME: mockrpi-os
 
 jobs:
-  check_image:
+  check:
     runs-on: ubuntu-latest
     outputs:
-      image_exists: ${{ steps.check_image_status.outputs.image_exists }}
+      image_exists: ${{ steps.image_check.outputs.image_exists }}
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set repository owner to lowercase
-        run: |
-          echo "repository_owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Check if Docker image exists
-        id: check_image_status
+        id: image_check
         run: |
           ENCODED_TOKEN=$(echo -n "${{ secrets.GITHUB_TOKEN }}" | base64)
-          #TAG_EXISTS=$(curl -s -H "Authorization: Bearer ${ENCODED_TOKEN}" \
-          #    https://ghcr.io/v2/${{ env.repository_owner }}/${{ env.IMAGE_NAME }}/tags/list | jq -r --arg TAG "latest" '.tags[] | select(. == $TAG)')
           TAG_EXISTS=$(curl -s -H "Authorization: Bearer ${ENCODED_TOKEN}" \
               "https://ghcr.io/v2/${{ env.repository_owner }}/${{ env.IMAGE_NAME }}/tags/list" | \
               jq -r --arg TAG "latest" '.tags[] | select(. == $TAG)')
@@ -46,21 +30,13 @@ jobs:
             echo "image_exists=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Inform about check_image status
-        run: |
-          if [ "${{ steps.check_image_status.outputs.image_exists }}" == 'false' ]; then
-            echo "Image does not exist. Building a new one."
-          else
-            echo "Image exists, going to use it."
-          fi
-
   build_image:
-    needs: check_image
-    if: ${{ needs.check_image.outputs.image_exists == 'false' }}
+    needs: check
+    if: ${{ needs.check.outputs.image_exists == 'false' }}
     uses: ./.github/workflows/build-image.yaml
 
   run_tests:
-    needs: [check_image, build_image]
+    needs: [check, build_image]
     if: ${{ needs.check_image.outputs.image_exists == 'true' || needs.build_image.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
