@@ -8,6 +8,9 @@ on:
       - ".github/**"
   workflow_dispatch:
 
+env:
+  IMAGE_NAME: mockrpi-os
+
 jobs:
   check_image:
     runs-on: ubuntu-latest
@@ -21,7 +24,7 @@ jobs:
           echo "repository_owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -30,7 +33,12 @@ jobs:
       - name: Check if Docker image exists
         id: check_image_status
         run: |
-          if docker pull ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest; then
+          ENCODED_TOKEN=$(echo -n "${{ secrets.GITHUB_TOKEN }}" | base64)
+          TAG_EXISTS=$(curl -s -H "Authorization: Bearer ${ENCODED_TOKEN}" \
+              https://ghcr.io/v2/${{ env.repository_owner }}/${{ env.IMAGE_NAME }}/tags/list \
+              | jq -r --arg TAG "latest" '.tags[] \
+              | select(. == "latest")')
+          if [[ -n "$TAG_EXISTS" ]]; then
             echo "image_exists=true" >> $GITHUB_OUTPUT
           else
             echo "image_exists=false" >> $GITHUB_OUTPUT
@@ -46,12 +54,12 @@ jobs:
 
   build_image:
     needs: check_image
-    if: needs.check_image.outputs.image_exists == 'false'
+    if: ${{ needs.check_image.outputs.image_exists == 'false' }}
     uses: ./.github/workflows/build-image.yaml
 
   run_tests:
     needs: [check_image, build_image]
-    if: needs.check_image.outputs.image_exists == 'true' || needs.build_image.result == 'success'
+    if: ${{ needs.check_image.outputs.image_exists == 'true' || needs.build_image.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Use repository owner
