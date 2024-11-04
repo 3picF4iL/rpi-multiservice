@@ -44,7 +44,7 @@ jobs:
 
   run_tests:
     needs: [check, build_image]
-    if: ${{ needs.check.outputs.image_exists == 'true' || needs.build_image.result == 'success' }}
+    if: ${{ needs.check.outputs.image_exists == 'true' || (needs.build_image.result && needs.build_image.result == 'success') }}
     runs-on: ubuntu-latest
     steps:
       - name: Use repository owner
