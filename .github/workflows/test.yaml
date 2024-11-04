@@ -17,6 +17,10 @@ jobs:
     outputs:
       image_exists: ${{ steps.image_check.outputs.image_exists }}
     steps:
+      - name: Set repository owner to lowercase
+        run: |
+          echo "repository_owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+  
       - name: Check if Docker image exists
         id: image_check
         run: |
@@ -40,7 +44,7 @@ jobs:
 
   run_tests:
     needs: [check, build_image]
-    if: ${{ needs.check_image.outputs.image_exists == 'true' || needs.build_image.result == 'success' }}
+    if: ${{ needs.check.outputs.image_exists == 'true' || needs.build_image.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Use repository owner
