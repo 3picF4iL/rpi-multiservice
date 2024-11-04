@@ -69,8 +69,6 @@ jobs:
           IMAGE_LINK="ghcr.io/${{ needs.setup.outputs.repository_owner }}/$IMAGE"
           PLAYBOOK_PATH="/ansible/playbooks/rpi_multi_services.yaml"
 
-          export ANSIBLE_ROLES_PATH=$ANSIBLE_ROLES_PATH:/ansible/roles
-
           docker run --rm --platform \
             $PLATFORM_ARCH \
             $IMAGE_LINK \
