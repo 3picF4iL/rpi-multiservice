@@ -58,10 +58,6 @@ jobs:
     if: ${{ needs.check.outputs.image_exists == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Use repository owner
-        run: |
-          echo "Repository Owner: ${{ needs.setup.outputs.repository_owner }}"
-
       - name: Run Ansible tests
         run: |
           docker run --rm --platform linux/arm64 ghcr.io/${{ needs.setup.outputs.repository_owner }}/${{ env.IMAGE_NAME }}:latest ansible-playbook /ansible/playbooks/rpi_multi_services.yaml -i localhost
