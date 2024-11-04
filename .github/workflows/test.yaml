@@ -37,7 +37,7 @@ jobs:
           repo_owner=${{ needs.setup.outputs.repository_owner }}
           ENCODED_TOKEN=$(echo -n "${{ secrets.GITHUB_TOKEN }}" | base64)
           TAG_EXISTS=$(curl -s -H "Authorization: Bearer ${ENCODED_TOKEN}" \
-              "https://ghcr.io/v2/${{ repo_owner }}/${{ env.IMAGE_NAME }}/tags/list" | \
+              "https://ghcr.io/v2/$repo_owner/${{ env.IMAGE_NAME }}/tags/list" | \
               jq -r --arg TAG "latest" '.tags[] | select(. == $TAG)')
 
           echo "$TAG_EXISTS"
