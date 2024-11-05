@@ -12,7 +12,6 @@ RUN apt-get update && \
         zsh \
     && rm -rf /var/lib/apt/lists/*
 
-COPY ansible /ansible
 WORKDIR /ansible
 RUN mkdir -p /ansible/disks
 
