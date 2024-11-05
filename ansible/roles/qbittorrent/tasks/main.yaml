@@ -1,0 +1,27 @@
+---
+- name: Qbittorrent service installation
+  block:
+    - name: Install qbittorrent (nox) packages
+      ansible.builtin.apt:
+        name: qbittorrent-nox
+        state: present
+        update_cache: true
+
+    - name: Copy Qbittorrent service to /var/lib
+      ansible.builtin.copy:
+        src: "qbittorrent.service"
+        dst: /lib/systemd/system/
+
+    - name: Create symlink for Qbittorrent service in multi-user.target.wants
+      ansible.builtin.file:
+        src: /lib/systemd/system/qbittorrent.service
+        dest: /etc/systemd/system/qbittorrent.service
+        state: link
+
+    - name: Restart Qbittorrent service, reload daemon and enable the service
+      ansible.builtin.systemd:
+        name: qbittorrent
+        state: restarted
+        daemon_reload: true
+        enabled: true
+        masked: false

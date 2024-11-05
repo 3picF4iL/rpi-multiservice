@@ -1,0 +1,11 @@
+[Unit]
+Description=qBittorrent Command Line Client
+After=network.target
+
+[Service]
+User=root
+ExecStart=/usr/bin/qbittorrent-nox --webui-port=8090
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
