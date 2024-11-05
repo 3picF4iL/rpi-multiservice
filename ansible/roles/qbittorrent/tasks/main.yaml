@@ -10,7 +10,8 @@
     - name: Copy Qbittorrent service to /var/lib
       ansible.builtin.copy:
         src: "qbittorrent.service"
-        dst: /lib/systemd/system/
+        dest: /lib/systemd/system/
+        mode: "0644"
 
     - name: Create symlink for Qbittorrent service in multi-user.target.wants
       ansible.builtin.file:
