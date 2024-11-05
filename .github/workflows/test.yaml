@@ -61,6 +61,9 @@ jobs:
     if: ${{ needs.check.outputs.image_exists == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
