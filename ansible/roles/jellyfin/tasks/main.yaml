@@ -56,7 +56,7 @@
     - name: Copy configuration file
       ansible.builtin.copy:
         src: "jellyfin.service"
-        dst: /lib/systemd/system/
+        dest: /lib/systemd/system/
         mode: "0644"
 
     - name: Create symlink for Jellyfin service in systemd/system
