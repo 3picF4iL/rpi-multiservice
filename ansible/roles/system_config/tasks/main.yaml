@@ -11,7 +11,7 @@
         state: latest
 
     - name: Install packages
-      ansible.buildint.apt:
+      ansible.builtin.apt:
         name: "{{ item }}"
         state: present
       loop: "{{ required_os_packages }}"
