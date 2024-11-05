@@ -6,13 +6,13 @@ on:
     paths:
       - "Dockerfile"
       - "docker/**"
-      - ".github/workflows/build-image.yaml"
+      - ".github/workflows/test.yaml"
   pull_request:
     branches: ["master"]
     paths:
       - "Dockerfile"
       - "docker/**"
-      - ".github/workflows/build-image.yaml"
+      - ".github/workflows/test.yaml"
 
 env:
   IMAGE_NAME: mockrpi-os
