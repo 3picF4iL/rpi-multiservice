@@ -10,6 +10,12 @@
         upgrade: "yes"
         state: latest
 
+    - name: Install packages
+      ansible.buildint.apt:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ required_os_packages }}"
+
 - name: Disk mounting
   vars:
     mode: "{{ ansible_env.mode }}"

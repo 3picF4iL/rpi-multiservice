@@ -16,3 +16,6 @@ test_disks:
 mountpoints:
   disk1: /opt/jellyfin-storage
   disk2: /opt/jellyfin-private
+
+required_os_packages:
+  - wget
