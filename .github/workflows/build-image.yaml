@@ -12,6 +12,7 @@ on:
     paths:
       - "Dockerfile"
       - "docker/**"
+      - ".github/workflows/build-image.yaml"
   workflow_call:
     inputs:
       ref:

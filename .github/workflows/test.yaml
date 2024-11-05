@@ -1,12 +1,18 @@
 name: Test Docker Image
 
 on:
-  workflow_dispatch:
   push:
     branches: ["master"]
     paths:
-      - "ansible/**"
-      - ".github/**"
+      - "Dockerfile"
+      - "docker/**"
+      - ".github/workflows/build-image.yaml"
+  pull_request:
+    branches: ["master"]
+    paths:
+      - "Dockerfile"
+      - "docker/**"
+      - ".github/workflows/build-image.yaml"
 
 env:
   IMAGE_NAME: mockrpi-os
