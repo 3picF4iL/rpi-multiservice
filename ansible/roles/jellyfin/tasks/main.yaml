@@ -57,15 +57,16 @@
       ansible.builtin.copy:
         src: "jellyfin.service"
         dst: /lib/systemd/system/
+        mode: "0644"
 
-    - name: Create symlink for Jellyfin service in multi-user.target.wants
+    - name: Create symlink for Jellyfin service in systemd/system
       ansible.builtin.file:
         src: /lib/systemd/system/jellyfin.service
-        dest: /etc/systemd/system/multi-user.target.wants/jellyfin.service
+        dest: /etc/systemd/system/jellyfin.service
         state: link
 
     - name: Restart Jellyfin service, reload daemon and enable the service
-      ansible.builtin.systemd_service:
+      ansible.builtin.systemd:
         name: jellyfin
         state: restarted
         daemon_reload: true
