@@ -75,6 +75,7 @@ jobs:
             --rm \
             --privileged \
             --platform $PLATFORM_ARCH \
+            -v $(pwd)/ansible:/host_ansible \
             -e ANSIBLE_ROLES_PATH="/ansible/roles" \
             $IMAGE_LINK \
             ansible-playbook -vv $PLAYBOOK_PATH

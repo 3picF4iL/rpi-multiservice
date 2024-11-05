@@ -23,4 +23,7 @@ RUN dd if=/dev/zero of=/ansible/disks/disk1.img bs=1M count=1024 && \
 RUN mkntfs -F /ansible/disks/disk1.img && \
     mkntfs -F /ansible/disks/disk2.img
 
-CMD [ "/bin/bash" ]
+COPY docker/start.sh /start.sh
+RUN chmod +x /start.sh
+
+CMD ["/start.sh"]
