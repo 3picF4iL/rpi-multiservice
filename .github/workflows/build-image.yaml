@@ -55,3 +55,13 @@ jobs:
         run: |
           docker build --platform linux/arm64 -t ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest .
           docker push ghcr.io/${{ env.repository_owner }}/mockrpi-os:latest
+
+  test_image:
+    needs: build
+    if: ${{ needs.build.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
