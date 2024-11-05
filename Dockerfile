@@ -11,8 +11,8 @@ RUN apt-get update && \
         wget \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /ansible
 RUN mkdir -p /ansible/disks
+WORKDIR /ansible
 
 # Create test block devices to simulate SSD disks
 RUN dd if=/dev/zero of=/ansible/disks/disk1.img bs=1M count=1024 && \
