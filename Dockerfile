@@ -6,10 +6,9 @@ RUN apt-get update && \
         python3-pip \
         sshpass \
         ansible \
-        watch \
         ntfs-3g \
         python3-apt \
-        zsh \
+        wget \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /ansible
