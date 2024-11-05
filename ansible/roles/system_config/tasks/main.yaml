@@ -7,7 +7,7 @@
 
     - name: Upgrade packages
       ansible.builtin.apt:
-        upgrade: true
+        upgrade: "yes"
         state: latest
 
 - name: Disk mounting

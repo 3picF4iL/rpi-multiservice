@@ -44,3 +44,30 @@
       ansible.builtin.unarchive:
         src: "{{ existing_configuration_varlib }}"
         dst: "{{ path_conf_varlib }}"
+
+- name: Jellyfin service preparing
+  block:
+    - name: Create directory
+      ansible.builtin.file:
+        path: "/etc/systemd/system/jellyfin.service.d"
+        state: directory
+        mode: "0755"
+
+    - name: Copy configuration file
+      ansible.builtin.copy:
+        src: "jellyfin.service"
+        dst: /lib/systemd/system/
+
+    - name: Create symlink for Jellyfin service in multi-user.target.wants
+      ansible.builtin.file:
+        src: /lib/systemd/system/jellyfin.service
+        dest: /etc/systemd/system/multi-user.target.wants/jellyfin.service
+        state: link
+
+    - name: Restart Jellyfin service, reload daemon and enable the service
+      ansible.builtin.systemd_service:
+        name: jellyfin
+        state: restarted
+        daemon_reload: true
+        enabled: true
+        masked: false
