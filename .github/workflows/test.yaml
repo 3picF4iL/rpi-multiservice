@@ -37,9 +37,11 @@ jobs:
         run: |
           repo_owner=${{ needs.setup.outputs.repository_owner }}
           ENCODED_TOKEN=$(echo -n "${{ secrets.GITHUB_TOKEN }}" | base64)
+          REPO_LINK="https://ghcr.io/v2/$repo_owner/${{ env.IMAGE_NAME }}/tags/list"
+
           TAG_EXISTS=$(curl -s -H "Authorization: Bearer ${ENCODED_TOKEN}" \
-              "https://ghcr.io/v2/$repo_owner/${{ env.IMAGE_NAME }}/tags/list" | \
-              jq -r --arg TAG "latest" '.tags[] | select(. == $TAG)')
+              ${REPO_LINK} | \
+              jq -r --arg TAG "${{ env.IMAGE_TAG }}" '.tags[] | select(. == $TAG)')
 
           echo "$TAG_EXISTS"
 
@@ -69,8 +71,10 @@ jobs:
           IMAGE_LINK="ghcr.io/${{ needs.setup.outputs.repository_owner }}/$IMAGE"
           PLAYBOOK_PATH="playbooks/rpi_multi_services.yaml"
 
-          docker run --rm --platform \
-            $PLATFORM_ARCH \
+          docker run \
+            --rm \
+            --privileged \
+            --platform $PLATFORM_ARCH \
             -e ANSIBLE_ROLES_PATH="/ansible/roles" \
             $IMAGE_LINK \
-            ansible-playbook $PLAYBOOK_PATH
+            ansible-playbook -vv $PLAYBOOK_PATH
