@@ -8,6 +8,7 @@ RUN apt-get update && \
         sshpass \
         ansible \
         ntfs-3g \
+        systemctl \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /ansible/disks
