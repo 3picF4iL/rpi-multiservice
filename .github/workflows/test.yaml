@@ -1,4 +1,4 @@
-name: Test Docker Image
+name: Test Ansible Playbook
 
 on:
   push:
