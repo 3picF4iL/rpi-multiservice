@@ -1,3 +1,5 @@
+name: Test Trigger
+
 on:
   push:
     paths:
