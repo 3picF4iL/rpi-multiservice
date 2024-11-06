@@ -17,5 +17,5 @@ qbittorrent_modifiers:
   Bittorrent\MaxUploadsPerTorrent: 50
   Bittorrent\PeX: "true"
 
-qbittorrent_config: "~/.config/qBittorrent"
+qbittorrent_config: "~/.config/qBittorrent/qBittorrent.conf"
 qbittorrent_passwd: "TestP@$$W0RD!"

@@ -51,7 +51,7 @@
         option: WebUI\Password_PBKDF2
         value: "{{ qbittorrent_ui_passwd | qbittorrent_passwd }}"
 
-    - name: Restart Qbittorrent service, reload daemon and enable the service
+    - name: Restart Qbittorrent service
       ansible.builtin.systemd:
         name: qbittorrent
         state: restarted
