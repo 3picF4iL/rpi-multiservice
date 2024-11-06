@@ -1,0 +1,21 @@
+---
+# Qbittorrent configuration modifiers
+qbittorrent_modifiers:
+  Downloads\SavePath: "/opt/jellyfin-storage/movies/"
+  Downloads\TempPath: "/opt/jellyfin-storage/tmp/"
+  WebUI\Port: 8090
+  WebUI\Username: "root"
+  Queueing\MaxActiveDownloads: 1000
+  Queueing\MaxActiveTorrents: 1999
+  Queueing\MaxActiveUploads: 1000
+  Bittorrent\uTP_rate_limited: "false"
+  Bittorrent\DHT: "true"
+  Bittorrent\LSD: "true"
+  Bittorrent\MaxConnecs: 1000
+  Bittorrent\MaxConnecsPerTorrent: 400
+  Bittorrent\MaxUploads: 120
+  Bittorrent\MaxUploadsPerTorrent: 50
+  Bittorrent\PeX: "true"
+
+qbittorrent_config: "~/.config/qBittorrent"
+qbittorrent_passwd: "TestP@$$W0RD!"

@@ -7,7 +7,30 @@
         state: present
         update_cache: true
 
-    - name: Copy Qbittorrent service to /var/lib
+    - name: Copy qbittorrent configuration file
+      ansible.builtin.copy:
+        src: "qBittorrent.conf"
+        dest: "{{ qbittorrent_config }}"
+        mode: "0664"
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_id }}"
+
+    - name: Set configuration options according to variables
+      community.general.ini_file:
+        path: "{{ qbittorrent_config }}"
+        section: "Preferences"
+        option: "{{ item.key }}"
+        value: "{{ item.value }}"
+      with_items: "{{ qbittorrent_modifiers | dict2items }}"
+
+    - name: Set qBittorrent 'WebUI\Password_PBKDF2'
+      community.general.ini_file:
+        path: "{{ qbittorrent_config }}"
+        section: "Preferences"
+        option: WebUI\Password_PBKDF2
+        value: "{{ qbittorrent_ui_passwd | qbittorrent_passwd }}"
+
+    - name: Copy qbittorrent service to /var/lib
       ansible.builtin.copy:
         src: "qbittorrent.service"
         dest: /lib/systemd/system/
