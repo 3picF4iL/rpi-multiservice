@@ -8,6 +8,26 @@
         state: present
         update_cache: true
 
+    - name: Copy qbittorrent service to /var/lib
+      ansible.builtin.copy:
+        src: "qbittorrent.service"
+        dest: /lib/systemd/system/
+        mode: "0644"
+
+    - name: Create symlink for Qbittorrent service in multi-user.target.wants
+      ansible.builtin.file:
+        src: /lib/systemd/system/qbittorrent.service
+        dest: /etc/systemd/system/qbittorrent.service
+        state: link
+
+    - name: Restart Qbittorrent service, reload daemon and enable the service
+      ansible.builtin.systemd:
+        name: qbittorrent
+        state: restarted
+        daemon_reload: true
+        enabled: true
+        masked: false
+
     - name: Copy qbittorrent configuration file
       ansible.builtin.copy:
         src: "qBittorrent.conf"
@@ -30,18 +50,6 @@
         section: "Preferences"
         option: WebUI\Password_PBKDF2
         value: "{{ qbittorrent_ui_passwd | qbittorrent_passwd }}"
-
-    - name: Copy qbittorrent service to /var/lib
-      ansible.builtin.copy:
-        src: "qbittorrent.service"
-        dest: /lib/systemd/system/
-        mode: "0644"
-
-    - name: Create symlink for Qbittorrent service in multi-user.target.wants
-      ansible.builtin.file:
-        src: /lib/systemd/system/qbittorrent.service
-        dest: /etc/systemd/system/qbittorrent.service
-        state: link
 
     - name: Restart Qbittorrent service, reload daemon and enable the service
       ansible.builtin.systemd:
