@@ -6,10 +6,17 @@ RUN apt-get update && \
         python3-pip \
         python3-apt \
         sshpass \
-        ansible \
         ntfs-3g \
         systemctl \
     && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install --no-cache --upgrade pip setuptools
+RUN python3 -m pip install \
+	requests \
+	ansible \
+	ansible-cmdb
+
+RUN ansible-galaxy collection install community.general
 
 RUN mkdir -p /ansible/disks
 WORKDIR /ansible
