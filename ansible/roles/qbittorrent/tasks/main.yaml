@@ -1,5 +1,6 @@
 ---
 - name: Qbittorrent service installation
+  become: true
   block:
     - name: Install qbittorrent (nox) packages
       ansible.builtin.apt:
