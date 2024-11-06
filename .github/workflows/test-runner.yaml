@@ -1,17 +1,20 @@
-name: Test Ansible Playbook
+name: Test Ansible Role
 
 on:
   push:
     branches: ["master"]
     paths:
-      - "ansible/**"
       - ".github/workflows/test.yaml"
   pull_request:
     branches: ["master"]
     paths:
-      - "ansible/**"
       - ".github/workflows/test.yaml"
   workflow_dispatch:
+    inputs:
+      role:
+        description: "Role to test"
+        required: false
+        default: ""
 
 env:
   IMAGE_NAME: mockrpi-os
@@ -78,6 +81,11 @@ jobs:
           IMAGE="${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
           IMAGE_LINK="ghcr.io/${{ needs.setup.outputs.repository_owner }}/$IMAGE"
           PLAYBOOK_PATH="playbooks/rpi_multi_services.yaml"
+          SPECIFIC_ROLE=""
+
+          if [[ -n "${{ github.event.inputs.role }}" ]]; then
+            SPECIFIC_ROLE="--tags system_config,${{ github.event.inputs.role }}"
+          fi
 
           docker run \
             --rm \
@@ -86,4 +94,5 @@ jobs:
             -v $(pwd)/ansible:/host_ansible \
             -e ANSIBLE_ROLES_PATH="/ansible/roles" \
             $IMAGE_LINK \
-            ansible-playbook -vv $PLAYBOOK_PATH
+            ansible-playbook -vv $PLAYBOOK_PATH \
+            $SPECIFIC_ROLE

@@ -1,0 +1,54 @@
+on:
+  push:
+    paths:
+      - 'ansible/**'
+  pull_request:
+    paths:
+      - 'ansible/**'
+
+jobs:
+  detect_changes:
+    outputs:
+      changed_files: ${{ steps.detect_changes.outputs.changed_files }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Detect changed files
+        id: detect_changes
+        run: |
+          # For PR events, compare the base and head commits of the PR
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} -- ansible/*)
+          else
+            # For Push events, compare the before and after commits
+            CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} -- ansible/*)
+
+            # Check if 'before' commit exists (for force-push scenarios)
+            if ! git cat-file commit ${{ github.event.before }} >/dev/null 2>&1; then
+              echo "Force push detected! Fetching full history..."
+              git fetch --unshallow  # Fetch the full history to check for differences
+              CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} -- ansible/*)
+            fi
+          fi
+
+          echo "roles=[\"$(echo $CHANGED_ROLES | tr ' ' '"," ')\"]" >> $GITHUB_OUTPUT
+          echo "Changed files: $CHANGED_FILES"
+
+  trigger_test:
+    needs: detect_changes
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        role: "${{ fromJson(needs.detect_changes.outputs.roles) }}"
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run tests for role
+        uses: "./.github/workflows/test-runner.yaml"
+        with:
+          role: "${{ matrix.role }}"
