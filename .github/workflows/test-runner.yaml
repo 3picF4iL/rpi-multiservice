@@ -4,11 +4,11 @@ on:
   push:
     branches: ["master"]
     paths:
-      - ".github/workflows/test.yaml"
+      - ".github/workflows/test-runner.yaml"
   pull_request:
     branches: ["master"]
     paths:
-      - ".github/workflows/test.yaml"
+      - ".github/workflows/test-runner.yaml"
   workflow_dispatch:
     inputs:
       role:
