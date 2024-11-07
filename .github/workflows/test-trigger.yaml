@@ -37,7 +37,7 @@ jobs:
             fi
           fi
 
-          roles=$(echo $CHANGED_FILES | tr ' ' '\n' | awk -F'/' '{print $3}' | sort -u | tr '\n' ',' | sed 's/,$//')
+          roles=$(echo $CHANGED_FILES | tr ' ' '\n' | grep -E '^ansible/roles/' | awk -F'/' '{print $3}' | sort -u | tr '\n' ',' | sed 's/,$//')
 
           echo "roles=[\"$roles\"]" >> $GITHUB_OUTPUT
           echo "Changed files: $CHANGED_FILES"
