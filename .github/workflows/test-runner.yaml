@@ -93,7 +93,7 @@ jobs:
           SPECIFIC_ROLE=""
 
           if [[ -n "${{ inputs.role }}" ]]; then
-            SPECIFIC_ROLE="\"--tags system_config,${{ inputs.role }}\""
+            SPECIFIC_ROLE="\"-t system_config -t ${{ inputs.role }}\""
           fi
 
           docker run \
@@ -103,6 +103,4 @@ jobs:
             -v $(pwd)/ansible:/host_ansible \
             -e ANSIBLE_ROLES_PATH="/ansible/roles" \
             $IMAGE_LINK \
-            ansible-playbook -vv -i localhost \
-              $PLAYBOOK_PATH \
-              $SPECIFIC_ROLE
+            ansible-playbook -vv -i localhost $PLAYBOOK_PATH $SPECIFIC_ROLE
