@@ -11,11 +11,13 @@ on:
 jobs:
   detect_changes:
     outputs:
-      changed_files: ${{ steps.detect_changes.outputs.changed_files }}
+      roles: ${{ steps.detect_changes.outputs.roles }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Detect changed files
         id: detect_changes
@@ -35,20 +37,17 @@ jobs:
             fi
           fi
 
-          echo "roles=[\"$(echo $CHANGED_ROLES | tr ' ' '"," ')\"]" >> $GITHUB_OUTPUT
+          roles=$(echo $CHANGED_FILES | tr ' ' '\n' | grep -E '^ansible/roles/' | awk -F'/' '{print $3}' | sort -u | tr '\n' ',' | sed 's/,$//')
+
+          echo "roles=[\"$roles\"]" >> $GITHUB_OUTPUT
           echo "Changed files: $CHANGED_FILES"
+          echo "Extracted roles: $roles"
 
   trigger_test:
     needs: detect_changes
-    runs-on: ubuntu-latest
     strategy:
       matrix:
-        role: "${{ fromJson(needs.detect_changes.outputs.roles) }}"
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Run tests for role
-        uses: "./.github/workflows/test-runner.yaml"
-        with:
-          role: "${{ matrix.role }}"
+        role: ${{ fromJson(needs.detect_changes.outputs.roles) }}
+    uses: "./.github/workflows/test-runner.yaml"
+    with:
+      role: ${{ matrix.role }}

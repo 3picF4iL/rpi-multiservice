@@ -9,12 +9,22 @@ on:
     branches: ["master"]
     paths:
       - ".github/workflows/test-runner.yaml"
+
   workflow_dispatch:
     inputs:
       role:
         description: "Role to test"
         required: false
         default: ""
+        type: string
+
+  workflow_call:
+    inputs:
+      role:
+        description: "Role to test"
+        required: false
+        default: ""
+        type: string
 
 env:
   IMAGE_NAME: mockrpi-os
@@ -83,8 +93,8 @@ jobs:
           PLAYBOOK_PATH="playbooks/rpi_multi_services.yaml"
           SPECIFIC_ROLE=""
 
-          if [[ -n "${{ github.event.inputs.role }}" ]]; then
-            SPECIFIC_ROLE="--tags system_config,${{ github.event.inputs.role }}"
+          if [[ -n "${{ inputs.role }}" ]]; then
+            SPECIFIC_ROLE="-t system_config -t ${{ inputs.role }}"
           fi
 
           docker run \
@@ -94,5 +104,4 @@ jobs:
             -v $(pwd)/ansible:/host_ansible \
             -e ANSIBLE_ROLES_PATH="/ansible/roles" \
             $IMAGE_LINK \
-            ansible-playbook -vv $PLAYBOOK_PATH \
-            $SPECIFIC_ROLE
+            ansible-playbook -vv -i localhost $SPECIFIC_ROLE $PLAYBOOK_PATH
