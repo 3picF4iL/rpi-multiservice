@@ -18,4 +18,4 @@ qbittorrent_modifiers:
   Bittorrent\PeX: "true"
 
 qbittorrent_config: "~/.config/qBittorrent/qBittorrent.conf"
-qbittorrent_passwd: "TestP@$$W0RD!"
+qbittorrent_ui_passwd: "TestP@$$W0RD!"
