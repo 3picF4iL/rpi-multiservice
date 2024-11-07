@@ -104,4 +104,4 @@ jobs:
             -v $(pwd)/ansible:/host_ansible \
             -e ANSIBLE_ROLES_PATH="/ansible/roles" \
             $IMAGE_LINK \
-            ansible-playbook -vv $SPECIFIC_ROLE $PLAYBOOK_PATH -i localhost
+            ansible-playbook -vv -i localhost $SPECIFIC_ROLE $PLAYBOOK_PATH
