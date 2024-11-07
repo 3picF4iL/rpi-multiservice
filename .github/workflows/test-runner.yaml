@@ -9,6 +9,7 @@ on:
     branches: ["master"]
     paths:
       - ".github/workflows/test-runner.yaml"
+
   workflow_dispatch:
     inputs:
       role:
@@ -93,7 +94,7 @@ jobs:
           SPECIFIC_ROLE=""
 
           if [[ -n "${{ inputs.role }}" ]]; then
-            SPECIFIC_ROLE="\"-t system_config -t ${{ inputs.role }}\""
+            SPECIFIC_ROLE="-t system_config -t ${{ inputs.role }}"
           fi
 
           docker run \
@@ -103,4 +104,4 @@ jobs:
             -v $(pwd)/ansible:/host_ansible \
             -e ANSIBLE_ROLES_PATH="/ansible/roles" \
             $IMAGE_LINK \
-            ansible-playbook -vv -i localhost $PLAYBOOK_PATH $SPECIFIC_ROLE
+            ansible-playbook -vv $SPECIFIC_ROLE $PLAYBOOK_PATH -i localhost
